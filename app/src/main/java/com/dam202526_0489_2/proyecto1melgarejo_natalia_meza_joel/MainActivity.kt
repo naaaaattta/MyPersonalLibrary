@@ -74,8 +74,8 @@ class MainActivity : AppCompatActivity() {
             Toast.makeText(this, "Ir a Añadir Libro", Toast.LENGTH_SHORT).show()
 
             // TRUCO PARA PROBAR: Descomenta estas líneas para probar si guarda en la base de datos
-            // val testBook = Book(title = "Libro Prueba", author = "Test", year = 2024)
-            // saveBookTest(testBook)
+            val intent = Intent(this, com.dam202526_0489_2.proyecto1melgarejo_natalia_meza_joel.controllers.NewBookActivity::class.java)
+            startActivity(intent)
         }
     }
 

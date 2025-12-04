@@ -1,5 +1,6 @@
 package com.dam202526_0489_2.proyecto1melgarejo_natalia_meza_joel.controllers
 
+import androidx.core.os.BundleCompat
 import android.Manifest
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -38,14 +39,19 @@ class NewBookActivity : AppCompatActivity() {
     // --- 2. Launcher de la Cámara (Según temario AD11) ---
     private val cameraLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
         if (result.resultCode == RESULT_OK) {
-            // Recuperamos la foto "miniatura" (Bitmap) que nos da Android
-            val imageBitmap = result.data?.extras?.get("data") as? Bitmap
+            // Recuperamos el Bundle de extras (si existe)
+            val extras = result.data?.extras
+
+            // Usamos BundleCompat para obtener el Parcelable (Bitmap) de forma segura en cualquier versión
+            val imageBitmap = extras?.let {
+                BundleCompat.getParcelable(it, "data", Bitmap::class.java)
+            }
 
             imageBitmap?.let {
-                // A. La mostramos en pantalla para que el usuario la vea
+                // A. La mostramos en pantalla
                 ivBookCover.setImageBitmap(it)
 
-                // B. La guardamos en un archivo real para tener una ruta (Path)
+                // B. La guardamos en almacenamiento interno
                 currentPhotoPath = saveImageToInternalStorage(it)
             }
         }
@@ -57,6 +63,8 @@ class NewBookActivity : AppCompatActivity() {
 
         initViews()
         setupListeners()
+
+        fillSampleData()
     }
 
     private fun initViews() {
@@ -116,6 +124,26 @@ class NewBookActivity : AppCompatActivity() {
             e.printStackTrace()
         }
         return file.absolutePath
+    }
+
+    // Función para rellenar datos de prueba aleatorios
+    private fun fillSampleData() {
+        val samples = listOf(
+            Triple("Cien años de soledad", "Gabriel García Márquez", "1967"),
+            Triple("1984", "George Orwell", "1949"),
+            Triple("El Principito", "Antoine de Saint-Exupéry", "1943"),
+            Triple("Don Quijote de la Mancha", "Miguel de Cervantes", "1605"),
+            Triple("Harry Potter y la piedra filosofal", "J.K. Rowling", "1997"),
+            Triple("El Señor de los Anillos", "J.R.R. Tolkien", "1954")
+        )
+
+        // Elegir uno al azar
+        val randomBook = samples.random()
+
+        // Poner los textos en los campos
+        etTitle.setText(randomBook.first)
+        etAuthor.setText(randomBook.second)
+        etYear.setText(randomBook.third)
     }
 
     // --- LÓGICA DE GUARDADO (MVC + SINGLETON) ---
